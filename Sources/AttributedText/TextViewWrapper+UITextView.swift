@@ -1,6 +1,7 @@
 #if canImport(UIKit) && !os(watchOS)
 
     import SwiftUI
+    import SafariServices
 
     @available(iOS 14.0, tvOS 14.0, macCatalyst 14.0, *)
     struct TextViewWrapper: UIViewRepresentable {
@@ -25,9 +26,27 @@
 
         final class Coordinator: NSObject, UITextViewDelegate {
             var openURL: OpenURLAction?
+            
+            func openURLbySF(_ urlString: String) {
+                guard let url = URL(string: urlString) else {
+                    // not a valid URL
+                    return
+                }
+                if ["http", "https"].contains(url.scheme?.lowercased() ?? "") || urlString.hasPrefix("www."){
+                    let safariViewController = SFSafariViewController(url: url)
+                    UIApplication.shared.windows.first!.rootViewController?.present(safariViewController, animated: true, completion: nil)
+                } else {
+                    // Scheme is not supported or no scheme is given, use openURL
+                    if UIApplication.shared.canOpenURL(url) {
+                        UIApplication.shared.open(url, options: [:], completionHandler: nil)
+                    }
+                }
+            }
 
             func textView(_: UITextView, shouldInteractWith URL: URL, in _: NSRange, interaction _: UITextItemInteraction) -> Bool {
-                openURL?(URL)
+                self.openURLbySF(URL.absoluteString)
+                
+                // openURL?(URL)
                 return false
             }
         }
