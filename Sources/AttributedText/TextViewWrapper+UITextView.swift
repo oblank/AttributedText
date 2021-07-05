@@ -33,9 +33,14 @@
                     return
                 }
                 if ["http", "https"].contains(url.scheme?.lowercased() ?? "") || urlString.hasPrefix("www."){
-                    var window: UIWindow? = UIApplication.shared.windows[1]
-                    if window == nil {
-                        window = UIApplication.shared.windows.first
+                    var window: UIWindow? = UIApplication.shared.windows.first
+                    if UIApplication.shared.windows.count > 1 {
+                        window = UIApplication.shared.windows[1]
+                    }
+                    if window == nil  {
+                        if UIApplication.shared.canOpenURL(url) {
+                            UIApplication.shared.open(url, options: [:], completionHandler: nil)
+                        }
                     }
                     let safariViewController = SFSafariViewController(url: url)
                     window?.rootViewController?.present(safariViewController, animated: true, completion: nil)
