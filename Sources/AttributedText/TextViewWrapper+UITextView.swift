@@ -33,8 +33,12 @@
                     return
                 }
                 if ["http", "https"].contains(url.scheme?.lowercased() ?? "") || urlString.hasPrefix("www."){
+                    var window: UIWindow? = UIApplication.shared.windows[1]
+                    if window == nil {
+                        window = UIApplication.shared.windows.first
+                    }
                     let safariViewController = SFSafariViewController(url: url)
-                    UIApplication.shared.windows.first!.rootViewController?.present(safariViewController, animated: true, completion: nil)
+                    window?.rootViewController?.present(safariViewController, animated: true, completion: nil)
                 } else {
                     // Scheme is not supported or no scheme is given, use openURL
                     if UIApplication.shared.canOpenURL(url) {
