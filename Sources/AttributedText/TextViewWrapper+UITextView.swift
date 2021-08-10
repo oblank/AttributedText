@@ -2,6 +2,7 @@
 
     import SwiftUI
     import SafariServices
+    import Lightbox
 
     @available(iOS 14.0, tvOS 14.0, macCatalyst 14.0, *)
     struct TextViewWrapper: UIViewRepresentable {
@@ -24,6 +25,7 @@
             }
         }
 
+        @available(iOSApplicationExtension, unavailable)
         final class Coordinator: NSObject, UITextViewDelegate {
             var openURL: OpenURLAction?
             
@@ -57,6 +59,35 @@
                 
                 // openURL?(URL)
                 return false
+            }
+            
+            func textView(_ textView: UITextView, shouldInteractWith textAttachment: NSTextAttachment, in characterRange: NSRange, interaction: UITextItemInteraction) -> Bool {
+                let images = [
+                  LightboxImage(image: textAttachment.image!)
+                ]
+                // Create an instance of LightboxController.
+                let controller = LightboxController(images: images)
+                // Use dynamic background.
+                controller.dynamicBackground = true
+                
+                // Present your controller.
+                var window: UIWindow? = UIApplication.shared.windows.first
+                if UIApplication.shared.windows.count > 1 {
+                    window = UIApplication.shared.windows[1]
+                }
+                // 从下向上推入展示
+                let transition = CATransition()
+                transition.duration = 0.2
+                transition.type = CATransitionType.moveIn
+                //transition.speed = 5
+                transition.subtype = CATransitionSubtype.fromTop
+                window?.rootViewController?.view.window?.layer.add(transition, forKey: kCATransition)
+                window?.rootViewController?.present(controller, animated: true, completion: nil)
+                
+//                let navController = UINavigationController(rootViewController: controller)
+//                window?.rootViewController?.present(navController, animated: true, completion: nil)
+                
+                return true
             }
         }
 
