@@ -18,6 +18,11 @@ let package = Package(
     ],
     dependencies: [
         .package(
+            name: "Lightbox",
+            url: "https://github.com/hyperoslo/Lightbox",
+            .branch("master")
+        ),
+        .package(
             name: "SnapshotTesting",
             url: "https://github.com/pointfreeco/swift-snapshot-testing",
             from: "1.8.2"
@@ -26,7 +31,7 @@ let package = Package(
     targets: [
         .target(
             name: "AttributedText",
-            dependencies: []
+            dependencies: ["Lightbox"]
         ),
         .testTarget(
             name: "AttributedTextTests",
